@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^3.3.2"
+  },
+  "dependencies": {
+    "formik": "^2.4.1",
+    "react-calendar": "^4.2.1",
+    "react-datepicker": "^4.14.0",
+    "react-icons": "^4.9.0",
+    "react-router-dom": "^6.12.1"
+  }
+}
