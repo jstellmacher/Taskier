@@ -145,12 +145,15 @@ class TaskById(Resource):
     def delete(self, user, id):
         task = Task.query.filter_by(user_id=user.id, id=id).first()
         if not task:
-            return {'error': 'Task not found'}, 404
+            return make_response(jsonify({'error': 'Task not found'}), 404)
 
         db.session.delete(task)
         db.session.commit()
 
         return make_response(jsonify({'message': 'Task deleted successfully'}), 200)
+
+
+
 
 
 class Signup(Resource):

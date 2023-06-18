@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTrash, FaCheck, FaEdit, FaTimes } from "react-icons/fa";
+import { FaCheck, FaEdit, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 function TaskCard({ task, update, deleteT, highPriority }) {
@@ -17,7 +17,10 @@ function TaskCard({ task, update, deleteT, highPriority }) {
 
       if (response.ok) {
         console.log("Task status updated successfully");
-        response.json().then((t) => update({ ...t, status: "completed" }));
+        response.json().then((t) => {
+          update({ ...t, status: "completed" });
+          handleDeleteTask(); // Call handleDeleteTask after updating status
+        });
       } else {
         console.log("Failed to update task status");
       }
@@ -26,9 +29,25 @@ function TaskCard({ task, update, deleteT, highPriority }) {
     }
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (window.confirm("Are you sure you want to delete this task?")) {
-      deleteT(task);
+      try {
+        const response = await fetch(`/tasks/${task.id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          console.log("Task deleted successfully");
+          deleteT(task);
+        } else {
+          console.log("Failed to delete task");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -87,11 +106,11 @@ function TaskCard({ task, update, deleteT, highPriority }) {
           <div className="flex items-center">
             {!task.isEditing ? (
               <button
-                className="text-green-500 mr-2"
-                onClick={handleStatusUpdate}
-              >
-                <FaCheck size={20} />
-              </button>
+              className="text-green-500 mr-2"
+              onClick={handleDeleteTask}
+            >
+              <FaCheck size={20} />
+            </button>
             ) : (
               <div>
                 <h2 className="text-xl font-semibold">Edit Task</h2>
@@ -145,11 +164,6 @@ function TaskCard({ task, update, deleteT, highPriority }) {
           <div>
             <p className="text-green-500 font-semibold">Task Completed!</p>
             <div className="mt-2">
-              <FaTrash
-                size={20}
-                onClick={handleDeleteTask}
-                className="text-red-500 cursor-pointer"
-              />
               <FaTimes
                 size={20}
                 onClick={handleCancelEdit}
